@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: drug_verification_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: drug_verification
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d drug_verification"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: drug_verification_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      APP_ENV: production
+      PORT: 8080
+      DATABASE_URL: postgres://postgres:postgrespassword@db:5432/drug_verification?sslmode=disable
+      DB_MAX_CONNS: 25
+      DB_MIN_CONNS: 5
+      JWT_SECRET: super-secure-jwt-production-secret-key-32chars
+      JWT_EXPIRATION: 24h
+      CORS_ORIGIN: "*"
+      VERIFICATION_BASE_URL: http://localhost:8080/api/v1/verify
+
+volumes:
+  pgdata:
