@@ -59,9 +59,9 @@ export default function VerifyPortal() {
   };
 
   return (
-    <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+    <div className="verify-page">
       {/* Hero Section */}
-      <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+      <div className="verify-hero">
         <div
           style={{
             display: 'inline-flex',
@@ -80,19 +80,18 @@ export default function VerifyPortal() {
           </span>
         </div>
 
-        <h1 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '0.85rem', lineHeight: 1.2 }}>
+        <h1 className="verify-title">
           Instant Drug Authenticity Verification
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', maxWidth: '620px', margin: '0 auto' }}>
+        <p className="verify-description">
           Scan the QR code on your medicine pack or enter the unit serial number below to verify against registered pharmaceutical batches in real-time.
         </p>
       </div>
 
       {/* Verification Input Box */}
       <div
-        className="glass-panel"
+        className="glass-panel verify-panel"
         style={{
-          padding: '1.75rem',
           boxShadow: 'var(--shadow-lg)',
           position: 'relative',
         }}
@@ -102,9 +101,9 @@ export default function VerifyPortal() {
             e.preventDefault();
             performVerification();
           }}
-          style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}
+          className="verify-form"
         >
-          <div style={{ position: 'relative', flex: 1, minWidth: '240px' }}>
+          <div className="verify-input-wrap">
             <Search
               size={18}
               color="var(--text-dim)"
@@ -129,7 +128,7 @@ export default function VerifyPortal() {
           <button
             type="button"
             onClick={() => setShowScanner(!showScanner)}
-            className={`btn ${showScanner ? 'btn-danger' : 'btn-outline'}`}
+            className={`btn verify-action ${showScanner ? 'btn-danger' : 'btn-outline'}`}
             style={{ height: '50px', padding: '0 1.25rem' }}
           >
             <Camera size={18} />
@@ -139,7 +138,7 @@ export default function VerifyPortal() {
           <button
             type="submit"
             disabled={loading}
-            className="btn btn-primary"
+            className="btn btn-primary verify-action"
             style={{ height: '50px', padding: '0 1.75rem', minWidth: '130px' }}
           >
             {loading ? (

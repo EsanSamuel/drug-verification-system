@@ -1,36 +1,22 @@
-import React from 'react';
-import { ShieldCheck, LogIn, LogOut, User, Activity } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShieldCheck, LogIn, LogOut, User, Menu, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar({ currentView, onNavigate, onLoginClick }) {
   const { isAuthenticated, user, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = (view) => {
+    onNavigate(view);
+    setMenuOpen(false);
+  };
 
   return (
-    <nav
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-        background: 'rgba(9, 13, 22, 0.85)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: '1px solid var(--border-subtle)',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: '1280px',
-          margin: '0 auto',
-          padding: '0 1.5rem',
-          height: '64px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
+    <nav className={`navbar${menuOpen ? ' is-open' : ''}`}>
+      <div className="navbar-inner">
         {/* Logo / Brand */}
         <div
-          onClick={() => onNavigate('verify')}
+          onClick={() => navigate('verify')}
+          className="navbar-brand"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -60,33 +46,44 @@ export default function Navbar({ currentView, onNavigate, onLoginClick }) {
           </div>
         </div>
 
+        <button
+          className="navbar-menu-toggle"
+          type="button"
+          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={menuOpen}
+          aria-controls="primary-navigation"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          {menuOpen ? <X size={21} /> : <Menu size={21} />}
+        </button>
+
         {/* Navigation Tabs */}
-        <div style={{ display: 'flex', gap: '0.25rem' }}>
+        <div id="primary-navigation" className="navbar-links">
           <NavTab
             active={currentView === 'verify'}
-            onClick={() => onNavigate('verify')}
+            onClick={() => navigate('verify')}
             label="Verify Drug"
           />
           {isAuthenticated && (
             <>
               <NavTab
                 active={currentView === 'dashboard'}
-                onClick={() => onNavigate('dashboard')}
+                onClick={() => navigate('dashboard')}
                 label="Dashboard"
               />
               <NavTab
                 active={currentView === 'drugs'}
-                onClick={() => onNavigate('drugs')}
+                onClick={() => navigate('drugs')}
                 label="Drugs"
               />
               <NavTab
                 active={currentView === 'manufacturers'}
-                onClick={() => onNavigate('manufacturers')}
+                onClick={() => navigate('manufacturers')}
                 label="Manufacturers"
               />
               <NavTab
                 active={currentView === 'audit'}
-                onClick={() => onNavigate('audit')}
+                onClick={() => navigate('audit')}
                 label="Audit Logs"
               />
             </>
@@ -94,37 +91,31 @@ export default function Navbar({ currentView, onNavigate, onLoginClick }) {
         </div>
 
         {/* Right Side: Auth */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div className="navbar-auth">
           {isAuthenticated ? (
             <>
               {/* Online Indicator */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <div style={{
-                  width: '8px', height: '8px', borderRadius: '50%',
-                  background: 'var(--success)', boxShadow: '0 0 8px var(--success-glow)',
-                }} />
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>ONLINE</span>
+              <div className="navbar-online">
+                <span className="navbar-online-dot" />
+                <span>ONLINE</span>
               </div>
 
               <div
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '0.5rem',
-                  padding: '0.35rem 0.75rem', borderRadius: 'var(--radius-full)',
-                  background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--border-subtle)',
-                }}
+                className="navbar-user"
+                title={user?.full_name || user?.email}
               >
                 <User size={14} color="var(--primary)" />
-                <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>
+                <span className="navbar-user-label">
                   {user?.full_name?.split(' ')[0] || user?.email}
                 </span>
               </div>
 
-              <button onClick={logout} className="btn btn-ghost btn-sm" style={{ color: 'var(--text-dim)' }}>
+              <button onClick={() => { logout(); setMenuOpen(false); }} className="btn btn-ghost btn-sm navbar-logout" aria-label="Log out" title="Log out" style={{ color: 'var(--text-dim)' }}>
                 <LogOut size={16} />
               </button>
             </>
           ) : (
-            <button onClick={onLoginClick} className="btn btn-primary btn-sm">
+            <button onClick={() => { setMenuOpen(false); onLoginClick(); }} className="btn btn-primary btn-sm">
               <LogIn size={15} />
               <span>Pharmacist Login</span>
             </button>
@@ -139,30 +130,8 @@ function NavTab({ active, onClick, label }) {
   return (
     <button
       onClick={onClick}
-      style={{
-        padding: '0.45rem 0.85rem',
-        fontSize: '0.825rem',
-        fontWeight: active ? 600 : 500,
-        color: active ? 'var(--text-main)' : 'var(--text-muted)',
-        background: active ? 'rgba(14, 165, 233, 0.12)' : 'transparent',
-        border: active ? '1px solid rgba(14, 165, 233, 0.25)' : '1px solid transparent',
-        borderRadius: 'var(--radius-sm)',
-        cursor: 'pointer',
-        transition: 'all var(--transition-fast)',
-        fontFamily: 'var(--font-sans)',
-      }}
-      onMouseEnter={(e) => {
-        if (!active) {
-          e.target.style.color = 'var(--text-main)';
-          e.target.style.background = 'rgba(255, 255, 255, 0.04)';
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!active) {
-          e.target.style.color = 'var(--text-muted)';
-          e.target.style.background = 'transparent';
-        }
-      }}
+      className={`navbar-tab${active ? ' is-active' : ''}`}
+      aria-current={active ? 'page' : undefined}
     >
       {label}
     </button>
