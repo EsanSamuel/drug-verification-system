@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -147,5 +148,5 @@ func (h *Handler) Delete(c *gin.Context) {
 
 func isValidationErr(err error) bool {
 	msg := err.Error()
-	return len(msg) > 0 && msg[0] >= 'a' && msg[0] <= 'z'
+	return len(msg) > 0 && !strings.Contains(msg, ":")
 }

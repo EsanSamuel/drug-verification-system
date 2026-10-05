@@ -1,6 +1,8 @@
 // MedVerify API Client
 
-const BASE_URL = '/api/v1';
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.DEV ? '/api/v1' : 'https://drug-verification-system.onrender.com/api/v1');
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('token');
@@ -33,8 +35,16 @@ async function request(endpoint, options = {}) {
   }
 
   if (!response.ok) {
-    const errorMsg = data?.error || data?.message || `Request failed with status ${response.status}`;
+    const errorMsg =
+      (typeof data?.error === 'string' ? data.error : data?.error?.message) ||
+      data?.message ||
+      `Request failed with status ${response.status}`;
     throw new Error(errorMsg);
+  }
+
+  // Ensure res.success is always present and true on successful JSON responses
+  if (data && typeof data === 'object' && data.success === undefined) {
+    data.success = true;
   }
 
   return data;

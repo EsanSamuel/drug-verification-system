@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -166,7 +167,7 @@ func (h *Handler) Delete(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": gin.H{"message": "Drug has been suspended"}})
+	response.Success(c, http.StatusOK, gin.H{"message": "Drug has been suspended"})
 }
 
 // GenerateUnits handles drug unit generation.
@@ -249,5 +250,5 @@ func (h *Handler) GetQR(c *gin.Context) {
 
 func isValidationErr(err error) bool {
 	msg := err.Error()
-	return len(msg) > 0 && msg[0] >= 'a' && msg[0] <= 'z'
+	return len(msg) > 0 && !strings.Contains(msg, ":")
 }

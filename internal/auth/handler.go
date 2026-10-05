@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -108,7 +109,7 @@ func (h *Handler) Me(c *gin.Context) {
 // isValidationError checks if an error is a validation error (simple message, not wrapped).
 func isValidationError(err error) bool {
 	// Validation errors from our validate functions are simple fmt.Errorf messages
-	// while internal errors are wrapped with context prefixes like "auth:"
+	// without colons, while internal errors are wrapped with context prefixes like "auth:"
 	msg := err.Error()
-	return len(msg) > 0 && msg[0] >= 'a' && msg[0] <= 'z'
+	return len(msg) > 0 && !strings.Contains(msg, ":")
 }

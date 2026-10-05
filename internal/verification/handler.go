@@ -45,7 +45,7 @@ func (h *Handler) Verify(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	response.Success(c, http.StatusOK, result)
 }
 
 // ListLogs handles listing verification logs.

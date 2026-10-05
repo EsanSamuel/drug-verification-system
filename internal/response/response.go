@@ -17,12 +17,16 @@ type Pagination struct {
 
 // Success sends a single resource response.
 func Success(c *gin.Context, status int, data any) {
-	c.JSON(status, gin.H{"data": data})
+	c.JSON(status, gin.H{
+		"success": true,
+		"data":    data,
+	})
 }
 
 // SuccessWithPagination sends a paginated collection response.
 func SuccessWithPagination(c *gin.Context, data any, pagination Pagination) {
 	c.JSON(http.StatusOK, gin.H{
+		"success":    true,
 		"data":       data,
 		"pagination": pagination,
 	})
@@ -37,10 +41,9 @@ type APIError struct {
 // Error sends a structured error response.
 func Error(c *gin.Context, status int, code, message string) {
 	c.JSON(status, gin.H{
-		"error": APIError{
-			Code:    code,
-			Message: message,
-		},
+		"success": false,
+		"error":   message,
+		"code":    code,
 	})
 }
 
